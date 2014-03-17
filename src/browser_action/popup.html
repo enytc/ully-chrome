@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" ng-app="ullyExtension" ng-csp>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <!--ASSETS-->
+    <link rel="stylesheet" type="text/css" href="/css/app.v1.css" />
+    <link rel="stylesheet" type="text/css" href="/css/popup.css" />
+</head>
+
+<body class="" ng-controller="ullyCtrl">
+    <div class="ully-panel animated fadeInUp">
+        <header class="header bg-white">
+            <div class="row wrapper">
+                <div class="pull-left">
+                    Ully
+                </div>
+                <div class="pull-right">
+                    <div class="btn-group">
+                        <a href="#" class="btn btn-sm"><i class="fa fa-refresh fa-spin" ng-hide="!loadingPage"></i></a>
+                        <a href="http://ully.enytc.com" target="_blank" class="btn btn-sm btn-default"><i class="fa fa-home"></i></a>
+                        <a ng-href="http://ully.enytc.com/{{ user.username }}" target="_blank" class="btn btn-sm btn-default" ng-show="logged"><i class="fa fa-user"></i></a>
+                        <a href="#" ng-click="optionsPage()" class="btn btn-sm btn-default"><i class="fa fa-cog"></i></a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="alert alert-{{ notification.type }} animated fadeInUp" ng-hide="!notification.show">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <i class="fa fa-ban-circle"></i>
+            <strong>{{ notification.title }}</strong>
+            {{ notification.message }}
+        </div>
+        <section class="ully-body animated fadeInUp" ng-show="logged">
+            <form class="form-horizontal" name="createUrlForm" novalidate ng-submit="submit(createUrlForm.$valid)">
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <input id="title" name="title" type="text" placeholder="Enter a title" class="form-control input-md no-border" ng-model="url.title">
+                    </div>
+                    <div class="list-group-item" ng-class="{ 'has-error' : createUrlForm.url.$invalid && !createUrlForm.url.$pristine }">
+                        <input id="url" name="url" type="url" placeholder="Enter a url" class="form-control input-md no-border" ng-model="url.url" required>
+                        <p ng-show="createUrlForm.url.$invalid && !createUrlForm.url.$pristine">
+                            <strong class="text-danger">Url is required.</strong>
+                        </p>
+                    </div>
+                    <div class="list-group-item">
+                        <textarea id="description" name="description" ng-model="url.description" class="form-control input-md no-border" placeholder="Enter a description"></textarea>
+                    </div>
+                    <div class="line line-dashed"></div>
+                    <div class="list-group-item" ng-class="{ 'has-error' : createUrlForm.collection.$invalid && !createUrlForm.collection.$pristine }">
+                        <select id="collection" name="collection" ng-model="url.collection" ng-options="collection.slug as collection.name for collection in collectionsList" class="form-control input-md no-border" required>
+                            <option value="">Select a collection</option>
+                        </select>
+                        <p ng-show="createUrlForm.collection.$invalid && !createUrlForm.collection.$pristine">
+                            <strong class="text-danger">Collection is required.</strong>
+                        </p>
+                    </div>
+                </div>
+                <footer class="panel-footer text-right bg-light lter">
+                    <button type="submit" class="btn btn-success btn-s-xs" ng-disabled="createUrlForm.$invalid"><i class="fa fa-refresh fa-spin" ng-hide="!loading"></i> Save</button>
+                </footer>
+            </form>
+        </section>
+        <div class="ully-body animated fadeInUp" ng-hide="logged">
+            <section class="header bg-white">
+                <div class="alert alert-info">
+                    <p>
+                        You are not logged in to your
+                        <strong>Ully</strong> account. Click the button below to login.
+                    </p>
+                </div>
+                <a href="#" ng-click="optionsPage()" class="btn btn-block btn-success"><i class="fa fa-right"></i> Enter in your account</a>
+            </section>
+        </div>
+    </div>
+    <!-- CHROME EXTENSION POPUP -->
+    <script type="text/javascript" src="/js/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/js/angular/angular-reset-form.js"></script>
+    <script type="text/javascript" src="/js/angular-md5/angular-md5.min.js"></script>
+    <script type="text/javascript" src="/src/bg/app.js"></script>
+</body>
+
+</html>
