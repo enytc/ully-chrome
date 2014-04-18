@@ -1,8 +1,8 @@
 /*
  * ully
- * https://ully.io
+ * https://ully.in
  *
- * Copyright (c) 2014 EnyTC Corporation
+ * Copyright (c) 2014, EnyTC Corporation
  */
 
 'use strict';
@@ -11,6 +11,7 @@ var ullyExtension = angular.module('ullyExtension', ['ngResetForm', 'ngMd5']);
 
 ullyExtension.factory('$utils', function utils($window, md5) {
     return {
+        uri: 'https://ully.in/api',
         email: function (email) {
             return md5.createHash(email || '');
         },
@@ -19,16 +20,16 @@ ullyExtension.factory('$utils', function utils($window, md5) {
             email = md5.createHash(email || '');
             return 'https://www.gravatar.com/avatar/' + email + '?s=' + size;
         },
-        login: function (token) {
+        login: function (access_token) {
             var ully = {
-                token: token
+                access_token: access_token
             };
             $window.localStorage.ully = JSON.stringify(ully);
             return true;
         },
         logged: function () {
             var userData = JSON.parse($window.localStorage.ully || '{}');
-            if (userData.hasOwnProperty('token') && userData.token.length > 1) {
+            if (userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
                 return true;
             } else {
                 return false;
@@ -43,7 +44,7 @@ ullyExtension.factory('$utils', function utils($window, md5) {
         },
         getData: function () {
             var userData = JSON.parse($window.localStorage.ully || '{}');
-            if (userData.hasOwnProperty('token') && userData.token.length > 1) {
+            if (userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
                 return userData;
             } else {
                 return {};
@@ -101,11 +102,11 @@ ullyExtension.controller('loginCtrl', ['$scope', '$http', '$utils',
         $scope.submit = function (isValid) {
             if (isValid) {
                 $scope.loading = true;
-                $http.post('https://ully.herokuapp.com' + '/forgot/token', $scope.user)
+                $http.post($utils.uri + '/forgot/access_token', $scope.user)
                     .success(function (data, status) {
                         if (status == 200) {
                             $scope.loading = false;
-                            $utils.login(data.token);
+                            $utils.login(data.response.access_token);
                             $utils.refresh();
                         }
                     })
@@ -113,7 +114,7 @@ ullyExtension.controller('loginCtrl', ['$scope', '$http', '$utils',
                         $scope.notification = {
                             show: true,
                             type: 'danger',
-                            message: data.error
+                            message: data.response.error
                         };
                         $scope.loading = false;
                         $scope.logged = false;
@@ -136,19 +137,19 @@ ullyExtension.controller('optionsCtrl', ['$scope', '$http', '$utils',
 
         $scope.refresh = function () {
             $scope.loading = true;
-            $http.get('https://ully.herokuapp.com' + '/me?access_token=' + $utils.getData().token)
+            $http.get($utils.uri + '/me?access_token=' + $utils.getData().access_token)
                 .success(function (data, status) {
                     if (status == 200) {
                         $scope.loading = false;
-                        $scope.user = data;
-                        $utils.setUserData(data);
+                        $scope.user = data.response;
+                        $utils.setUserData(data.response);
                     }
                 })
                 .error(function (data, status) {
                     $scope.notification = {
                         show: true,
                         type: 'danger',
-                        message: data.error
+                        message: data.response.error
                     };
                     $scope.loading = false;
                     $scope.logged = false;
@@ -185,13 +186,13 @@ ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$collection
                     description: $scope.url.description
                 };
                 var collectionSlug = $scope.url.collection;
-                $http.post('https://ully.herokuapp.com' + '/collections/' + collectionSlug + '/urls?access_token=' + $utils.getData().token, newUrl)
+                $http.post($utils.uri + '/collections/' + collectionSlug + '/urls?access_token=' + $utils.getData().access_token, newUrl)
                     .success(function (data, status) {
                         if (status == 200) {
                             $scope.notification = {
                                 show: true,
                                 type: 'success',
-                                message: data.message
+                                message: data.response.msg
                             };
                             $scope.loading = false;
                             $scope.createUrlForm.$setPristine();
@@ -202,7 +203,7 @@ ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$collection
                         $scope.notification = {
                             show: true,
                             type: 'danger',
-                            message: data.error
+                            message: data.response.error
                         };
                         $scope.loading = false;
                     });
@@ -211,19 +212,19 @@ ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$collection
 
         $scope.refresh = function () {
             $scope.loadingPage = true;
-            $http.get('https://ully.herokuapp.com' + '/collections?access_token=' + $utils.getData().token)
+            $http.get($utils.uri + '/collections?access_token=' + $utils.getData().access_token)
                 .success(function (data, status) {
                     if (status == 200) {
                         $scope.loadingPage = false;
-                        $scope.collectionsList = data;
-                        $collections.save(data);
+                        $scope.collectionsList = data.response;
+                        $collections.save(data.response);
                     }
                 })
                 .error(function (data, status) {
                     $scope.notification = {
                         show: true,
                         type: 'danger',
-                        message: data.error
+                        message: data.response.error
                     };
                     $scope.loadingPage = false;
                 });

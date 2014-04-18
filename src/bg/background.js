@@ -1,15 +1,15 @@
 /*
  * ully
- * https://ully.io
+ * https://ully.in
  *
- * Copyright (c) 2014 EnyTC Corporation
+ * Copyright (c) 2014, EnyTC Corporation
  */
 
 'use strict';
 
 chrome.runtime.onInstalled.addListener(function (details) {
     chrome.tabs.create({
-        url: 'http://ully.enytc.com/installed'
+        url: 'https://ully.in/installed'
     });
 });
 
@@ -21,7 +21,7 @@ chrome.omnibox.onInputEntered.addListener(function (command) {
         });
     } else {
         chrome.tabs.create({
-            url: 'http://ully.enytc.com/collections/' + command
+            url: 'https://ully.in/collections/' + command
         });
     }
 });
