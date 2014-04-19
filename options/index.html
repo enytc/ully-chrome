@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="ullyExtension" ng-csp ng-controller="ullyCtrl" ng-class="{ 'app bg-dark': logged }">
+<html lang="en" ng-app="ullyExtension" ng-csp class="app bg-light">
 
 <head>
     <meta charset="utf-8">
@@ -8,14 +8,19 @@
     <link href="/icons/icon16.png" rel="shortcut icon" type="image/x-icon">
     <!--ASSETS-->
     <link rel="stylesheet" type="text/css" href="/css/app.v1.css" />
+    <link rel="stylesheet" type="text/css" href="/css/addons.css" />
 </head>
 
-<body class="">
+<body class="ully-bg">
     <section id="content" class="m-t-lg wrapper-md animated fadeInUp" ng-controller="loginCtrl" ng-hide="logged">
         <div class="container aside-xl">
-            <a class="navbar-brand block" href="https://ully.in" target="_blank">Ully</a>
+            <div class="text-center">
+                <a href="https://ully.in" target="_blank">
+                    <img class="ully-logo" width="210px" height="80px" src="/img/logo.png">
+                </a>
+            </div>
             <section class="m-b-lg">
-                <header class="wrapper text-center">
+                <header class="wrapper text-white text-center">
                     <strong>Enter with your login and password</strong>
                 </header>
                 <div class="alert alert-{{ notification.type }} animated fadeInUp" ng-hide="!notification.show">
@@ -41,8 +46,10 @@
                     </div>
                     <button type="submit" class="btn btn-lg btn-success btn-block" ng-disabled="loginForm.$invalid"><i class="fa fa-refresh fa-spin" ng-hide="!loading"></i> Login</button>
                     <div class="line line-dashed"></div>
-                    <p class="text-muted text-center">
-                        <small>Do not have an account?</small>
+                    <p class="text-white text-center">
+                        <strong>
+                            <small>Do not have an account?</small>
+                        </strong>
                     </p>
                     <a href="https://ully.in/signup" target="_blank" class="btn btn-lg btn-info btn-block">Create an account</a>
                 </form>
@@ -51,7 +58,11 @@
     </section>
     <section id="content" class="m-t-lg wrapper-md animated fadeInUp" ng-controller="optionsCtrl" ng-show="logged">
         <div class="container aside-xl">
-            <a class="navbar-brand block" href="https://ully.in" target="_blank">Ully</a>
+            <div class="text-center">
+                <a href="https://ully.in" target="_blank">
+                    <img width="210px" height="80px" src="/img/logo.png">
+                </a>
+            </div>
             <section class="m-b-lg">
                 <header class="wrapper text-center">
                     <strong>Account Settings</strong>
@@ -82,10 +93,12 @@
     </section>
     <!-- footer -->
     <footer class="animated fadeInUp" id="footer">
-        <div class="text-center padder">
+        <div class="text-white text-center padder">
             <p>
-                <small>EnyTC Corporation
-                    <br>&copy; 2014</small>
+                <strong>
+                    <small>EnyTC Corporation
+                        <br>&copy; 2014</small>
+                </strong>
             </p>
         </div>
     </footer>
