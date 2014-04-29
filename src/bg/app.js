@@ -11,7 +11,7 @@ var ullyExtension = angular.module('ullyExtension', ['ngResetForm', 'ngMd5']);
 
 ullyExtension.factory('$utils', function utils($window, md5) {
     return {
-        uri: 'https://ully.in/api',
+        uri: 'https://ully.herokuapp.com/api',
         email: function (email) {
             return md5.createHash(email || '');
         },
