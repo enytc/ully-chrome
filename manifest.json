@@ -12,7 +12,9 @@
     "default_locale": "en",
     "background": {
         "scripts": [
+            "js/socket.io/socket.io.js",
             "js/underscore/underscore.min.js",
+            "src/bg/context_menu.js",
             "src/bg/background.js"
         ],
         "persistent": false
@@ -25,6 +27,7 @@
     },
     "permissions": [
         "tabs",
+        "contextMenus",
         "https://ully.in/api/*"
     ],
     "omnibox": {

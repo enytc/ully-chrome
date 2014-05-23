@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="ullyExtension" ng-csp class="app bg-light">
+<html lang="en" ng-csp class="app bg-light">
 
 <head>
     <meta charset="utf-8">
@@ -75,9 +75,9 @@
                 </div>
                 <div>
                     <div class="text-center">
-                        <div class="thumb-lg" ng-show="user.email">
+                        <div class="thumb-lg" ng-show="user.hashedEmail">
                             <a ng-href="https://ully.in/{{ user.username }}" target="_blank">
-                                <img alt="{{ user.name }}" ng-src="{{ gravatar(user.email, 128) }}" class="img-circle b-a b-dark b-3x">
+                                <img alt="{{ user.name }}" ng-src="{{ gravatar(user.hashedEmail, 128) }}" class="img-circle b-a b-dark b-3x">
                             </a>
                         </div>
                         <p class="text-white h3 m-t m-b">{{ user.name }}</p>
@@ -102,9 +102,11 @@
             </p>
         </div>
     </footer>
+    <!-- Socket.io -->
+    <script type="text/javascript" src="/js/socket.io/socket.io.js"></script>
     <!-- App -->
     <script type="text/javascript" src="/js/angular/angular.min.js"></script>
     <script type="text/javascript" src="/js/angular/angular-reset-form.js"></script>
-    <script type="text/javascript" src="/js/angular-md5/angular-md5.min.js"></script>
+    <script type="text/javascript" src="/js/whirlpool/whirlpool.js"></script>
     <script type="text/javascript" src="/src/bg/app.js"></script>
 </body>
