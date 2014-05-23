@@ -9,6 +9,28 @@
 
 var ullyExtension = angular.module('ullyExtension', ['ngResetForm']);
 
+function NC(title, msg, body, buttons) {
+    var opt = {
+        type: 'basic',
+        title: title,
+        message: msg,
+        iconUrl: '/icons/icon128quad.png'
+    };
+    if (body) {
+        opt.contextMessage = body;
+    }
+    if (buttons) {
+        opt.buttons = buttons;
+    }
+    //Send message
+    chrome.notifications.create('UllyContextMessage', opt, function() {});
+    chrome.notifications.clear('UllyContextMessage', function(wasCleared) {
+        if (wasCleared) {
+            console.log('was cleared!');
+        }
+    });
+}
+
 function isLogged() {
     var userData = JSON.parse(window.localStorage.ully || '{}');
     if (userData.hasOwnProperty('email') && userData.email.length > 1 && userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
@@ -234,9 +256,10 @@ ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$collection
                         $scope.createUrlForm.$setPristine();
                         $scope.url = {};
                         $scope.$apply();
-                        setTimeout(function(){
+                        NC('Success', data.msg);
+                        setTimeout(function() {
                             $window.close();
-                        }, 3000);
+                        }, 1000);
                     } else {
                         $scope.notification = {
                             show: true,

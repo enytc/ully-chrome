@@ -1,4 +1,4 @@
-# Ully Chrome Extension [![GH version](https://badge-me.herokuapp.com/api/gh/enytc/ully-chrome.png)](http://badges.enytc.com/for/gh/enytc/ully-chrome) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/enytc/ully-chrome/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+# Ully Chrome Extension [![GH version](https://badge-me.herokuapp.com/api/gh/ully/ully-chrome.png)](http://badges.enytc.com/for/gh/ully/ully-chrome) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ully/ully-chrome/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 > Manage your ully collections on google chrome
 
@@ -7,7 +7,7 @@
 See the [CONTRIBUTING Guidelines](CONTRIBUTING.md)
 
 ## Support
-If you have any problem or suggestion please open an issue [here](https://github.com/enytc/ully-chrome/issues).
+If you have any problem or suggestion please open an issue [here](https://github.com/ully/ully-chrome/issues).
 
 ## License
 

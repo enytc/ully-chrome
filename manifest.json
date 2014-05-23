@@ -9,13 +9,16 @@
         "48": "icons/icon48.png",
         "128": "icons/icon128.png"
     },
+    "web_accessible_resources": [
+        "icons/icon48.png"
+    ],
     "default_locale": "en",
     "background": {
         "scripts": [
-            "js/socket.io/socket.io.js",
             "js/underscore/underscore.min.js",
-            "src/bg/context_menu.js",
-            "src/bg/background.js"
+            "js/socket.io/socket.io.js",
+            "src/bg/background.js",
+            "src/bg/context_menu.js"
         ],
         "persistent": false
     },
@@ -28,6 +31,7 @@
     "permissions": [
         "tabs",
         "contextMenus",
+        "notifications",
         "https://ully.in/api/*"
     ],
     "omnibox": {

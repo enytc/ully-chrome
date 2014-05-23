@@ -5,6 +5,30 @@
  * Copyright (c) 2014, EnyTC Corporation
  */
 
+'use strict';
+
+function NC(title, msg, body, buttons) {
+    var opt = {
+        type: 'basic',
+        title: title,
+        message: msg,
+        iconUrl: '/icons/icon128quad.png'
+    };
+    if (body) {
+        opt.contextMessage = body;
+    }
+    if (buttons) {
+        opt.buttons = buttons;
+    }
+    //Send message
+    chrome.notifications.create('UllyContextMessage', opt, function() {});
+    chrome.notifications.clear('UllyContextMessage', function(wasCleared) {
+        if (wasCleared) {
+            console.log('was cleared!');
+        }
+    });
+}
+
 function isLogged() {
     var userData = JSON.parse(window.localStorage.ully || '{}');
     if (userData.hasOwnProperty('email') && userData.email.length > 1 && userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
@@ -36,44 +60,43 @@ function connectToBackend() {
 //Start connection
 connectToBackend();
 
-chrome.runtime.onInstalled.addListener(function() {
-    //ClickAction
-    var clickHandler = function(e) {
-        var url = e.pageUrl;
-        var urlData = {
-            url: url
-        };
-
-        if (e.linkUrl) {
-            url = e.linkUrl;
-            urlData = {
-                url: url
-            };
-        }
-
-        var newUrl = {
-            url: urlData.url,
-            collectionSlug: 'favorites'
-        };
-        window.socket.emit('collections/save', newUrl);
-        window.socket.on('collections/saved', function(data) {
-            if (!data.hasOwnProperty('error')) {
-                alert(data.msg);
-            } else {
-                window.alert(data.error.message || data.error || 'Something went wrong. You are logged in using your Ully account?');
-            }
-        });
+//ClickAction
+var clickHandler = function(info, tab) {
+    var url = info.pageUrl;
+    var urlData = {
+        url: url,
+        title: tab.title
     };
 
-    chrome.contextMenus.create({
-        "title": "Save link to Ully",
-        "contexts": ["link"],
-        "onclick": clickHandler
-    });
+    if (info.linkUrl) {
+        url = info.linkUrl;
+        urlData = {
+            url: url
+        };
+    }
 
-    chrome.contextMenus.create({
-        "title": "Save page to Ully",
-        "contexts": ["page"],
-        "onclick": clickHandler
+    urlData.collectionSlug = 'favorites';
+    //Save
+    window.socket.emit('collections/save', urlData);
+    window.socket.on('collections/saved', function(data) {
+        if (!data.hasOwnProperty('error')) {
+            NC('Success', data.msg);
+        } else {
+            NC('Error', data.error.message || data.error || 'Something went wrong. You are logged in using your Ully account?');
+        }
     });
+};
+
+chrome.contextMenus.onClicked.addListener(clickHandler);
+
+chrome.contextMenus.create({
+    "id": "ullySaveLink",
+    "title": "Save link to Ully",
+    "contexts": ["link"]
+});
+
+chrome.contextMenus.create({
+    "id": "ullySavePage",
+    "title": "Save page to Ully",
+    "contexts": ["page"]
 });

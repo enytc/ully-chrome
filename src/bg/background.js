@@ -7,13 +7,18 @@
 
 'use strict';
 
-chrome.runtime.onInstalled.addListener(function (details) {
+chrome.runtime.onInstalled.addListener(function(details) {
+    //Clear DB
+    delete window.localStorage.ully;
+    delete window.localStorage.ullyUser;
+    delete window.localStorage.ullyCollections;
+    //Redirect
     chrome.tabs.create({
         url: 'https://ully.in/installed'
     });
 });
 
-chrome.omnibox.onInputEntered.addListener(function (command) {
+chrome.omnibox.onInputEntered.addListener(function(command) {
     var re = /^https?:\/\//;
     if (re.test(command)) {
         chrome.tabs.create({
@@ -26,7 +31,7 @@ chrome.omnibox.onInputEntered.addListener(function (command) {
     }
 });
 
-chrome.omnibox.onInputChanged.addListener(function (text, suggest) {
+chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
     var collectionsData = JSON.parse(window.localStorage.ullyCollections || '[]');
     var suggestsList = [];
     if (collectionsData && collectionsData.length) {
@@ -38,7 +43,7 @@ chrome.omnibox.onInputChanged.addListener(function (text, suggest) {
                 });
             }
         };
-        var selectedList = _.filter(suggestsList, function (val) {
+        var selectedList = _.filter(suggestsList, function(val) {
             var re = new RegExp(text, 'g');
             return re.test(val.content);
         });
