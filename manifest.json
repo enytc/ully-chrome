@@ -1,6 +1,6 @@
 {
-    "name": "Ully",
-    "version": "0.1.0",
+    "name": "Save to Ully",
+    "version": "0.2.0",
     "manifest_version": 2,
     "description": "Manage your ully collections on google chrome.",
     "homepage_url": "https://ully.in",

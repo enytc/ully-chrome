@@ -29,39 +29,28 @@ function NC(title, msg, body, buttons) {
     });
 }
 
-function isLogged() {
-    var userData = JSON.parse(window.localStorage.ully || '{}');
-    if (userData.hasOwnProperty('email') && userData.email.length > 1 && userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
-        return true;
-    } else {
-        return false;
+function popupCenter(url, title, w, h) {
+    // Fixes dual-screen position
+    var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+    var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+    var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+    var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+    var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+    var top = ((height / 2) - (h / 2)) + dualScreenTop;
+    var newWindow = window.open(url, title, 'scrollbars=yes, resizable=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+    // Puts focus on the newWindow
+    if (window.focus) {
+        newWindow.focus();
     }
 }
-
-function getAuth() {
-    var userData = JSON.parse(window.localStorage.ully || '{}');
-    if (userData.hasOwnProperty('email') && userData.email.length > 1 && userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
-        return userData;
-    } else {
-        return {};
-    }
-}
-
-function connectToBackend() {
-    if (isLogged()) {
-        window.socket = io.connect('http://localhost:22792/socket', {
-            query: 'email=' + getAuth().email + '&access_token=' + getAuth().access_token
-        });
-    } else {
-        console.info('You need to be logged!');
-    }
-}
-
-//Start connection
-connectToBackend();
 
 //ClickAction
 var clickHandler = function(info, tab) {
+    //Start connection
+    connectToBackend();
     var url = info.pageUrl;
     var urlData = {
         url: url,
@@ -75,19 +64,34 @@ var clickHandler = function(info, tab) {
         };
     }
 
-    urlData.collectionSlug = 'favorites';
-    //Save
-    window.socket.emit('collections/save', urlData);
-    window.socket.on('collections/saved', function(data) {
-        if (!data.hasOwnProperty('error')) {
-            NC('Success', data.msg);
+    if (window.hasOwnProperty('socket')) {
+        if (info.menuItemId === 'ullySaveLink' || info.menuItemId === 'ullySavePage') {
+            urlData.collectionSlug = 'favorites';
+            //Save
+            window.socket.emit('collections/save', urlData);
+            window.socket.on('collections/saved', function(data) {
+                if (!data.hasOwnProperty('error')) {
+                    NC('Success', data.msg);
+                } else {
+                    NC('Error', data.error.message || data.error || 'Something went wrong. You are logged in using your Ully account?');
+                }
+            });
         } else {
-            NC('Error', data.error.message || data.error || 'Something went wrong. You are logged in using your Ully account?');
+            //Save
+            window.socket.emit('shortener/shorten', urlData);
+            window.socket.on('shortener/data', function(data) {
+                if (!data.hasOwnProperty('error')) {
+                    NC('Success', data.msg);
+                    popupCenter('https://ully.in/shortener/view/' + data.shortenedUrl.shortcode, 'Ully Shortener', 400, 528);
+                } else {
+                    NC('Error', data.error.message || data.error || 'Something went wrong. You are logged in using your Ully account?');
+                }
+            });
         }
-    });
+    }
 };
 
-chrome.contextMenus.onClicked.addListener(clickHandler);
+//Quick save
 
 chrome.contextMenus.create({
     "id": "ullySaveLink",
@@ -100,3 +104,19 @@ chrome.contextMenus.create({
     "title": "Save page to Ully",
     "contexts": ["page"]
 });
+
+//Shortener
+
+chrome.contextMenus.create({
+    "id": "ullyShortenLink",
+    "title": "Shorten this Link",
+    "contexts": ["link"]
+});
+
+chrome.contextMenus.create({
+    "id": "ullyShortenPage",
+    "title": "Shorten this page",
+    "contexts": ["page"]
+});
+
+chrome.contextMenus.onClicked.addListener(clickHandler);

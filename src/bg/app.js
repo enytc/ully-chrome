@@ -51,7 +51,7 @@ function getAuth() {
 
 function connectToBackend() {
     if (isLogged()) {
-        window.socket = io.connect('http://localhost:22792/socket', {
+        window.socket = io.connect('https://ully.in', {
             query: 'email=' + getAuth().email + '&access_token=' + getAuth().access_token
         });
     } else {
@@ -69,7 +69,7 @@ angular.element(document).ready(function() {
 
 ullyExtension.factory('$utils', function utils($window) {
     return {
-        uri: 'http://localhost:22792/api',
+        uri: 'https://ully.in/api',
         gravatar: function(email, size) {
             size = size || '80';
             return 'https://www.gravatar.com/avatar/' + email + '?s=' + size;
