@@ -7,28 +7,6 @@
 
 'use strict';
 
-function NC(title, msg, body, buttons) {
-    var opt = {
-        type: 'basic',
-        title: title,
-        message: msg,
-        iconUrl: '/icons/icon128quad.png'
-    };
-    if (body) {
-        opt.contextMessage = body;
-    }
-    if (buttons) {
-        opt.buttons = buttons;
-    }
-    //Send message
-    chrome.notifications.create('UllyContextMessage', opt, function() {});
-    chrome.notifications.clear('UllyContextMessage', function(wasCleared) {
-        if (wasCleared) {
-            console.log('was cleared!');
-        }
-    });
-}
-
 function popupCenter(url, title, w, h) {
     // Fixes dual-screen position
     var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
@@ -51,6 +29,7 @@ function popupCenter(url, title, w, h) {
 var clickHandler = function(info, tab) {
     //Start connection
     connectToBackend();
+
     var url = info.pageUrl;
     var urlData = {
         url: url,
@@ -66,26 +45,24 @@ var clickHandler = function(info, tab) {
 
     if (window.hasOwnProperty('socket')) {
         if (info.menuItemId === 'ullySaveLink' || info.menuItemId === 'ullySavePage') {
-            urlData.collectionSlug = 'favorites';
+            urlData.slug = 'favorites';
             //Save
-            window.socket.emit('collections/save', urlData);
-            window.socket.on('collections/saved', function(data) {
-                if (!data.hasOwnProperty('error')) {
-                    NC('Success', data.msg);
-                } else {
-                    NC('Error', data.error.message || data.error || 'Something went wrong. You are logged in using your Ully account?');
-                }
+            window.socket.emit('/api/collections/add', urlData);
+            window.socket.on('/api/collections/url/created', function(data) {
+                NC('Success', data.msg);
+            });
+            window.socket.on('/api/collections/url/error', function(err) {
+                NC('Error', err);
             });
         } else {
             //Save
-            window.socket.emit('shortener/shorten', urlData);
-            window.socket.on('shortener/data', function(data) {
-                if (!data.hasOwnProperty('error')) {
-                    NC('Success', data.msg);
-                    popupCenter('https://ully.in/shortener/view/' + data.shortenedUrl.shortcode, 'Ully Shortener', 400, 528);
-                } else {
-                    NC('Error', data.error.message || data.error || 'Something went wrong. You are logged in using your Ully account?');
-                }
+            window.socket.emit('/api/shortener/shorten', urlData);
+            window.socket.on('/api/shortener/created', function(data) {
+                NC('Success', data.msg);
+                popupCenter(ULLY_URI +'/l/' + data.shortenedUrl.shortcode + '?view=true', 'Ully Shortener', 400, 500);
+            });
+            window.socket.on('/api/shortener/error', function(err) {
+                NC('Error', err);
             });
         }
     }
@@ -95,13 +72,13 @@ var clickHandler = function(info, tab) {
 
 chrome.contextMenus.create({
     "id": "ullySaveLink",
-    "title": "Save link to Ully",
+    "title": chrome.i18n.getMessage('menu_save_link'),
     "contexts": ["link"]
 });
 
 chrome.contextMenus.create({
     "id": "ullySavePage",
-    "title": "Save page to Ully",
+    "title": chrome.i18n.getMessage('menu_save_page'),
     "contexts": ["page"]
 });
 
@@ -109,13 +86,13 @@ chrome.contextMenus.create({
 
 chrome.contextMenus.create({
     "id": "ullyShortenLink",
-    "title": "Shorten this Link",
+    "title": chrome.i18n.getMessage('menu_shorten_link'),
     "contexts": ["link"]
 });
 
 chrome.contextMenus.create({
     "id": "ullyShortenPage",
-    "title": "Shorten this page",
+    "title": chrome.i18n.getMessage('menu_shorten_page'),
     "contexts": ["page"]
 });
 

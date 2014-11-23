@@ -1,8 +1,8 @@
 {
-    "name": "Save to Ully",
-    "version": "0.2.0",
+    "name": "__MSG_app_title__",
+    "version": "0.3.0",
     "manifest_version": 2,
-    "description": "Manage your ully collections on google chrome.",
+    "description": "__MSG_app_description__",
     "homepage_url": "https://ully.in",
     "icons": {
         "16": "icons/icon16.png",
@@ -17,6 +17,7 @@
         "scripts": [
             "js/underscore/underscore.min.js",
             "js/socket.io/socket.io.js",
+            "src/bg/config.js",
             "src/bg/background.js",
             "src/bg/context_menu.js"
         ],
@@ -30,6 +31,7 @@
     },
     "permissions": [
         "tabs",
+        "bookmarks",
         "contextMenus",
         "notifications",
         "https://ully.in/api/*"

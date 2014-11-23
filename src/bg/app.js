@@ -7,60 +7,7 @@
 
 'use strict';
 
-var ullyExtension = angular.module('ullyExtension', ['ngResetForm']);
-
-function NC(title, msg, body, buttons) {
-    var opt = {
-        type: 'basic',
-        title: title,
-        message: msg,
-        iconUrl: '/icons/icon128quad.png'
-    };
-    if (body) {
-        opt.contextMessage = body;
-    }
-    if (buttons) {
-        opt.buttons = buttons;
-    }
-    //Send message
-    chrome.notifications.create('UllyContextMessage', opt, function() {});
-    chrome.notifications.clear('UllyContextMessage', function(wasCleared) {
-        if (wasCleared) {
-            console.log('was cleared!');
-        }
-    });
-}
-
-function isLogged() {
-    var userData = JSON.parse(window.localStorage.ully || '{}');
-    if (userData.hasOwnProperty('email') && userData.email.length > 1 && userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function getAuth() {
-    var userData = JSON.parse(window.localStorage.ully || '{}');
-    if (userData.hasOwnProperty('email') && userData.email.length > 1 && userData.hasOwnProperty('access_token') && userData.access_token.length > 1) {
-        return userData;
-    } else {
-        return {};
-    }
-}
-
-function connectToBackend() {
-    if (isLogged()) {
-        window.socket = io.connect('https://ully.in', {
-            query: 'email=' + getAuth().email + '&access_token=' + getAuth().access_token
-        });
-    } else {
-        console.info('You need to be logged!');
-    }
-}
-
-//Start connection
-connectToBackend();
+var ullyExtension = angular.module('ullyExtension', ['ngResetForm', 'ngProgress']);
 
 // Bootstrap
 angular.element(document).ready(function() {
@@ -69,14 +16,13 @@ angular.element(document).ready(function() {
 
 ullyExtension.factory('$utils', function utils($window) {
     return {
-        uri: 'https://ully.in/api',
+        uri: ULLY_URI + '/api',
         gravatar: function(email, size) {
             size = size || '80';
             return 'https://www.gravatar.com/avatar/' + email + '?s=' + size;
         },
-        login: function(email, access_token) {
+        login: function(access_token) {
             var ully = {
-                email: email,
                 access_token: access_token
             };
             $window.localStorage.ully = JSON.stringify(ully);
@@ -96,7 +42,42 @@ ullyExtension.factory('$utils', function utils($window) {
             return true;
         },
         refresh: function() {
-            $window.location = "/options/index.html";
+            $window.location = '/options/index.html';
+        },
+        importToBookmarkTree: function(bookmarks, cb) {
+            cb = cb || function(message, imported) {};
+            //Create root tree
+            chrome.bookmarks.create({
+                title: 'Ully'
+            }, function(rootTree) {
+                async.eachSeries(bookmarks, function(bookmark, callback) {
+                    chrome.bookmarks.create({
+                        parentId: rootTree.id,
+                        title: bookmark.title
+                    }, function(tree) {
+                        async.eachSeries(bookmark.urls, function(url, callback2) {
+                            chrome.bookmarks.create({
+                                parentId: tree.id,
+                                title: url.title || url.url,
+                                url: url.url
+                            }, function(urlTree) {
+                                callback2();
+                            });
+                        }, function(err) {
+                            if (err) {
+                                return callback(err);
+                            }
+                            callback();
+                        });
+                    });
+                }, function(err) {
+                    if (err) {
+                        return cb(err);
+                    } else {
+                        return cb(null, chrome.i18n.getMessage('import_success'));
+                    }
+                });
+            });
         },
         getData: function() {
             var userData = JSON.parse($window.localStorage.ully || '{}');
@@ -126,6 +107,49 @@ ullyExtension.factory('$utils', function utils($window) {
     };
 });
 
+ullyExtension.factory('$loading', function(ngProgress) {
+    return {
+        start: function() {
+            ngProgress.height('4px');
+            ngProgress.color('#27d4a8');
+            ngProgress.start();
+        },
+        complete: function() {
+            ngProgress.complete();
+        }
+    };
+});
+
+ullyExtension.factory('$socket', function($rootScope) {
+    //Start connection
+    var socketService;
+    if (window.socket && window.socket.socket.connected) {
+        socketService = window.socket;
+    } else {
+        socketService = connectToBackend();
+    }
+    return {
+        on: function(eventName, callback) {
+            socketService.on(eventName, function() {
+                var args = arguments;
+                $rootScope.$apply(function() {
+                    callback.apply(socket, args);
+                });
+            });
+        },
+        emit: function(eventName, data, callback) {
+            socketService.emit(eventName, data, function() {
+                var args = arguments;
+                $rootScope.$apply(function() {
+                    if (callback) {
+                        callback.apply(socket, args);
+                    }
+                });
+            });
+        }
+    };
+});
+
 ullyExtension.factory('$collections', function collections($window) {
     return {
         get: function() {
@@ -151,77 +175,160 @@ ullyExtension.factory('$collections', function collections($window) {
     };
 });
 
-ullyExtension.controller('loginCtrl', ['$scope', '$http', '$utils',
-    function loginCtrl($scope, $http, $utils) {
+ullyExtension.controller('loginCtrl', ['$scope', '$http', '$utils', '$loading',
+    function loginCtrl($scope, $http, $utils, $loading) {
 
         $scope.logged = $utils.logged();
 
         $scope.submit = function(isValid) {
             if (isValid) {
                 $scope.loading = true;
-                $http.post($utils.uri + '/search/check', $scope.user)
+                $loading.start();
+                $http.post($utils.uri + '/login', $scope.user)
                     .success(function(data, status) {
                         if (status === 200 && data.response.exists) {
                             $scope.loading = false;
-                            $utils.login($scope.user.email, Whirlpool($scope.user.password).toLowerCase());
+                            $loading.complete();
+                            $utils.login(data.response.access_token);
                             $utils.refresh();
                         }
                     })
                     .error(function(data, status) {
-                        $scope.notification = {
-                            show: true,
-                            type: 'danger',
-                            message: data.response.error
-                        };
+                        if (data && data.response && data.response.error) {
+                            $scope.notification = {
+                                show: true,
+                                type: 'danger',
+                                message: data.response.error
+                            };
+                        }
                         $scope.loading = false;
                         $scope.logged = false;
+                        $loading.complete();
                     });
             }
         };
     }
 ]);
 
-ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$utils',
-    function optionsCtrl($scope, $window, $http, $utils) {
+ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$socket', '$utils', '$loading',
+    function optionsCtrl($scope, $window, $http, $socket, $utils, $loading) {
 
         $scope.logged = $utils.logged();
         $scope.gravatar = $utils.gravatar;
+
+        $scope.exportToUlly = function() {
+            $scope.notification = {
+                show: false
+            };
+            //Get bookmarks
+            chrome.bookmarks.getTree(function(results) {
+                $loading.start();
+                //Send to Ully BookmarkService
+                $socket.emit('/api/importer', {
+                    bookmarks: results
+                });
+                $socket.on('/api/importer/imported', function(data) {
+                    $loading.complete();
+                    $scope.notification = {
+                        show: true,
+                        type: 'success',
+                        message: data.msg
+                    };
+                    NC('Success', data.msg);
+                    setTimeout(function() {
+                        chrome.tabs.create({
+                            url: ULLY_URI + '/collections'
+                        });
+                    }, 3000);
+                });
+                $socket.on('/api/importer/error', function(err) {
+                    $loading.complete();
+                    $scope.notification = {
+                        show: true,
+                        type: 'danger',
+                        message: err
+                    };
+                    NC('', err);
+                });
+            });
+        };
+
+        $scope.importToChrome = function() {
+            $scope.notification = {
+                show: false
+            };
+            //Get bookmarks from Ully
+            $loading.start();
+            //Send to Ully BookmarkService
+            $socket.emit('/api/exporter');
+            $socket.on('/api/exporter/data', function(data) {
+                $loading.complete();
+                $utils.importToBookmarkTree(data.bookmarks, function(err, message) {
+                    if (err) {
+                        $scope.notification = {
+                            show: true,
+                            type: 'danger',
+                            message: err
+                        };
+                        $scope.$apply();
+                        NC('', err);
+                    } else {
+                        $scope.notification = {
+                            show: true,
+                            type: 'success',
+                            message: message
+                        };
+                        $scope.$apply();
+                        NC('', message);
+                    }
+                });
+            });
+            $socket.on('/api/exporter/error', function(err) {
+                $loading.complete();
+                $scope.notification = {
+                    show: true,
+                    type: 'danger',
+                    message: err
+                };
+                NC('', err);
+            });
+        };
 
         $scope.logout = function() {
             $utils.logout();
             $utils.refresh();
         };
 
-        $scope.refresh = function() {
+        $scope.refreshAccount = function() {
             $scope.loading = true;
-            $window.socket.emit('account/info');
-            $window.socket.on('account/info', function(data) {
-                if (!data.hasOwnProperty('error')) {
-                    $scope.loading = false;
-                    $scope.user = data;
-                    $scope.$apply();
-                    $utils.setUserData(data);
-                } else {
-                    $scope.notification = {
-                        show: true,
-                        type: 'danger',
-                        message: data.error.message || data.error
-                    };
-                    $scope.loading = false;
-                    $scope.logged = false;
-                    $scope.$apply();
-                }
+            $loading.start();
+            $socket.emit('/api/account');
+            $socket.on('/api/account/data', function(data) {
+                $scope.loading = false;
+                $loading.complete();
+                $scope.user = data;
+                $utils.setUserData(data);
+            });
+            $socket.on('/api/account/error', function(err) {
+                $scope.notification = {
+                    show: true,
+                    type: 'danger',
+                    message: err
+                };
+                $scope.loading = false;
+                $scope.logged = false;
+                $loading.complete();
             });
         };
 
         if ($scope.logged) {
-            $scope.refresh();
+            $scope.refreshAccount();
         }
     }
 ]);
 
-ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$collections', '$utils',
-    function ullyCtrl($scope, $window, $http, $collections, $utils) {
+ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$socket', '$collections', '$utils',
+    function ullyCtrl($scope, $window, $http, $socket, $collections, $utils) {
 
         $scope.logged = $utils.logged();
 
@@ -231,7 +338,7 @@ ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$collection
 
         $scope.optionsPage = function() {
             chrome.tabs.create({
-                url: chrome.extension.getURL("options/index.html")
+                url: chrome.extension.getURL('options/index.html')
             });
         };
 
@@ -242,67 +349,61 @@ ullyExtension.controller('ullyCtrl', ['$scope', '$window', '$http', '$collection
                     title: $scope.url.title,
                     url: $scope.url.url,
                     description: $scope.url.description,
-                    collectionSlug: $scope.url.collection
+                    slug: $scope.url.collection
                 };
-                $window.socket.emit('collections/save', newUrl);
-                $window.socket.on('collections/saved', function(data) {
-                    if (!data.hasOwnProperty('error')) {
-                        $scope.notification = {
-                            show: true,
-                            type: 'success',
-                            message: data.msg
-                        };
-                        $scope.loading = false;
-                        $scope.createUrlForm.$setPristine();
-                        $scope.url = {};
-                        $scope.$apply();
-                        NC('Success', data.msg);
-                        setTimeout(function() {
-                            $window.close();
-                        }, 1000);
-                    } else {
-                        $scope.notification = {
-                            show: true,
-                            type: 'danger',
-                            message: data.error.message || data.error
-                        };
-                        $scope.loading = false;
-                        $scope.$apply();
-                    }
+                $socket.emit('/api/collections/add', newUrl);
+                $socket.on('/api/collections/url/created', function(data) {
+                    $scope.notification = {
+                        show: true,
+                        type: 'success',
+                        message: data.msg
+                    };
+                    $scope.loading = false;
+                    $scope.createUrlForm.$setPristine();
+                    $scope.url = {};
+                    NC('Success', data.msg);
+                    setTimeout(function() {
+                        $window.close();
+                    }, 1000);
+                });
+                $socket.on('/api/collections/url/error', function(err) {
+                    $scope.notification = {
+                        show: true,
+                        type: 'danger',
+                        message: err
+                    };
+                    $scope.loading = false;
                 });
             }
         };
 
-        $scope.refresh = function() {
+        $scope.refreshCollectionList = function() {
             $scope.loadingPage = true;
-            $window.socket.emit('collections/get');
-            $window.socket.on('collections/list', function(data) {
-                if (!data.hasOwnProperty('error')) {
-                    $scope.loadingPage = false;
-                    $scope.collectionsList = data;
-                    $collections.save(data);
-                    $scope.$apply();
-                } else {
-                    $scope.notification = {
-                        show: true,
-                        type: 'danger',
-                        message: data.error.message || data.error
-                    };
-                    $scope.loadingPage = false;
-                    $scope.$apply();
-                }
+            $socket.emit('/api/collections');
+            $socket.on('/api/collections/list', function(data) {
+                $scope.loadingPage = false;
+                $scope.collectionsList = data;
+                $collections.save(data);
+            });
+            $socket.on('/api/collections/error', function(err) {
+                $scope.notification = {
+                    show: true,
+                    type: 'danger',
+                    message: err
+                };
+                $scope.loadingPage = false;
             });
         };
 
         if ($scope.logged) {
-            $scope.refresh();
+            $scope.refreshCollectionList();
         }
 
         chrome.tabs.query({
             active: true,
             currentWindow: true
         }, function(tab) {
-            var extUrl = chrome.extension.getURL("options/index.html");
+            var extUrl = chrome.extension.getURL('options/index.html');
             var regex = /^https?:\/\//;
             if (regex.test(tab[0].url)) {
                 $scope.url.title = tab[0].title;

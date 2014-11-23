@@ -1,0 +1,89 @@
+{
+    "app_title": {
+        "message": "Salvar no Ully"
+    },
+    "app_description": {
+        "message": "Gerencie suas coleções do Ully no google chrome"
+    },
+    "app_options_title": {
+        "message": "Ully | Opções"
+    },
+    "login_title": {
+        "message": "Preencha seu e-email e senha"
+    },
+    "login_note": {
+        "message": "Ainda não tem uma conta?"
+    },
+    "input_email": {
+        "message": "Preencha seu e-mail"
+    },
+    "input_password": {
+        "message": "Preencha sua senha"
+    },
+    "input_title": {
+        "message": "Escolha um título"
+    },
+    "input_url": {
+        "message": "Coloque sua url"
+    },
+    "input_collection": {
+        "message": "Selecione uma coleção"
+    },
+    "input_description": {
+        "message": "Coloque uma descrição (opcional)"
+    },
+    "input_error_email": {
+        "message": "O campo e-mail é obrigatório!"
+    },
+    "input_error_password": {
+        "message": "O campo senha é obrigatório!"
+    },
+    "input_error_url": {
+        "message": "O campo url é obrigatório!"
+    },
+    "input_error_collection": {
+        "message": "Você precisa selecionar uma coleção!"
+    },
+    "button_login": {
+        "message": "Entrar"
+    },
+    "button_create_account": {
+        "message": "Criar uma conta"
+    },
+    "button_import": {
+        "message": "Importar do Ully para o Google Chrome"
+    },
+    "button_export": {
+        "message": "Exportar do Google Chrome para o Ully"
+    },
+    "button_logout": {
+        "message": "Sair"
+    },
+    "button_save": {
+        "message": "Salvar"
+    },
+    "button_access_account": {
+        "message": "Entre em sua conta"
+    },
+    "options_title": {
+        "message": "Configurações da Conta"
+    },
+    "popup_note": {
+        "message": "Você não está logado em sua conta do <strong>Ully</strong>. Clique no botão abaixo para entrar."
+    },
+    "menu_save_link": {
+        "message": "Salvar esse link no Ully"
+    },
+    "menu_save_page": {
+        "message": "Salvar essa página no Ully"
+    },
+    "menu_shorten_link": {
+        "message": "Encurtar esse link"
+    },
+    "menu_shorten_page": {
+        "message": "Encurtar essa página"
+    },
+    "import_success": {
+        "message": "Suas coleções foram importadas com sucesso para o Google Chrome!"
+    }
+}
