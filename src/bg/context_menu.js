@@ -59,7 +59,7 @@ var clickHandler = function(info, tab) {
             window.socket.emit('/api/shortener/shorten', urlData);
             window.socket.on('/api/shortener/created', function(data) {
                 NC('Success', data.msg);
-                popupCenter(ULLY_URI +'/l/' + data.shortenedUrl.shortcode + '?view=true', 'Ully Shortener', 400, 500);
+                popupCenter(ULLY_URI +'/l/' + data.shortenedUrl.shortcode + '?view=true&success=true', 'Ully Shortener', 400, 500);
             });
             window.socket.on('/api/shortener/error', function(err) {
                 NC('Error', err);
