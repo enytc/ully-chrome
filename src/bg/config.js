@@ -7,7 +7,7 @@
 
 'use strict';
 
-var ULLY_URI = 'http://localhost:3000';
+var ULLY_URI = 'http://localhost';
 
 function NC(title, msg, body, buttons) {
     var opt = {

@@ -85,5 +85,8 @@
     },
     "import_success": {
         "message": "Your collections have been successfully imported into Google Chrome!"
+    },
+    "import_info": {
+        "message": "The Ully began importing your bookmarks. Do not close this page until receive a success message."
     }
 }

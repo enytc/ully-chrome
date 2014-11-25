@@ -223,12 +223,28 @@ ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$socket'
             //Get bookmarks
             chrome.bookmarks.getTree(function(results) {
                 $loading.start();
+                $scope.loadingExport = true;
+                $scope.notification = {
+                    show: true,
+                    type: 'info',
+                    message: chrome.i18n.getMessage('import_info')
+                };
                 //Send to Ully BookmarkService
                 $socket.emit('/api/importer', {
-                    bookmarks: results
+                    bookmarks: results,
+                    browser: 'google-chrome'
+                });
+                $socket.on('/api/importer/progress', function(data) {
+                    $scope.notification = {
+                        show: true,
+                        type: 'info',
+                        message: data.msg
+                    };
+                    NC('', data.msg);
                 });
                 $socket.on('/api/importer/imported', function(data) {
                     $loading.complete();
+                    $scope.loadingExport = false;
                     $scope.notification = {
                         show: true,
                         type: 'success',
@@ -243,6 +259,7 @@ ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$socket'
                 });
                 $socket.on('/api/importer/error', function(err) {
                     $loading.complete();
+                    $scope.loadingExport = false;
                     $scope.notification = {
                         show: true,
                         type: 'danger',
@@ -259,12 +276,14 @@ ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$socket'
             };
             //Get bookmarks from Ully
             $loading.start();
+            $scope.loadingImport = true;
             //Send to Ully BookmarkService
             $socket.emit('/api/exporter');
             $socket.on('/api/exporter/data', function(data) {
                 $loading.complete();
                 $utils.importToBookmarkTree(data.bookmarks, function(err, message) {
                     if (err) {
+                        $scope.loadingImport = false;
                         $scope.notification = {
                             show: true,
                             type: 'danger',
@@ -273,6 +292,7 @@ ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$socket'
                         $scope.$apply();
                         NC('', err);
                     } else {
+                        $scope.loadingImport = false;
                         $scope.notification = {
                             show: true,
                             type: 'success',
@@ -285,6 +305,7 @@ ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$socket'
             });
             $socket.on('/api/exporter/error', function(err) {
                 $loading.complete();
+                $scope.loadingImport = false;
                 $scope.notification = {
                     show: true,
                     type: 'danger',
