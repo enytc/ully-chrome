@@ -12,11 +12,11 @@
 
 <body class="" ng-controller="ullyCtrl">
     <div class="ully-panel animated lightSpeedIn">
-        <header class="header bg-white">
+        <header class="header">
             <div class="row wrapper">
                 <div class="pull-left">
-                    <img src="/img/logo-icon.png">
-                    <img src="/img/logo-small.png">
+                    <img src="/img/logo-icon.png" height="30px">
+                    <img src="/img/logo-text.png" height="30px">
                 </div>
                 <div class="pull-right">
                     <div class="btn-group">
@@ -34,7 +34,7 @@
             <strong>{{ notification.title }}</strong>
             {{ notification.message }}
         </div>
-        <section class="ully-body animated lightSpeedIn" ng-show="logged">
+        <section class="ully-body animated lightSpeedIn bg-white" ng-show="logged">
             <form class="form-horizontal" name="createUrlForm" novalidate ng-submit="submit(createUrlForm.$valid)">
                 <div class="list-group">
                     <div class="list-group-item">
@@ -49,7 +49,6 @@
                     <div class="list-group-item">
                         <textarea name="description" ng-model="url.description" class="form-control input-md no-border"></textarea>
                     </div>
-                    <div class="line line-dashed"></div>
                     <div class="list-group-item" ng-class="{ 'has-error' : createUrlForm.collection.$invalid && !createUrlForm.collection.$pristine }">
                         <select name="collection" ng-model="url.collection" ng-options="collection.slug as collection.name for collection in collectionsList" class="form-control input-md no-border" required>
                             <option id="i18n-input-collection" value=""></option>
@@ -59,13 +58,13 @@
                         </p>
                     </div>
                 </div>
-                <footer class="panel-footer text-right bg-light lter">
+                <footer class="panel-footer text-right bg-white no-border">
                     <button type="submit" class="btn btn-success btn-s-xs" ng-disabled="createUrlForm.$invalid"><i class="fa fa-refresh fa-spin" ng-show="loading"></i> <span id="i18n-button-save"></span></button>
                 </footer>
             </form>
         </section>
         <div class="ully-body animated fadeInUp" ng-hide="logged">
-            <section class="header bg-white">
+            <section class="header">
                 <div class="alert alert-info">
                     <p id="i18n-popup-note"></p>
                 </div>
