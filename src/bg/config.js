@@ -1,20 +1,20 @@
 /*
- * ully
- * https://ully.in
+ * ully-chrome
+ * https://github.com/ullyin/ully-chrome
  *
- * Copyright (c) 2014, EnyTC Corporation
+ * Copyright (c) 2015, EnyTC Corporation
  */
 
 'use strict';
 
-var ULLY_URI = 'http://localhost:3000';
+var ULLY_URI = window.localStorage.ULLY_URI || 'https://ully.in';
 
 function NC(title, msg, body, buttons) {
     var opt = {
         type: 'basic',
         title: title,
         message: msg,
-        iconUrl: '/icons/icon128quad.png'
+        iconUrl: '/icons/icon128.png'
     };
     if (body) {
         opt.contextMessage = body;

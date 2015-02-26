@@ -14,7 +14,7 @@
 </head>
 
 <body class="ully-bg">
-    <section id="content" class="m-t-lg wrapper-md animated bounceInUp" ng-controller="loginCtrl" ng-hide="logged">
+    <section id="contentLogin" class="m-t-lg wrapper-md animated bounceInUp" ng-controller="loginCtrl" ng-hide="logged">
         <div class="container aside-xl">
             <div class="text-center">
                 <a href="https://ully.in" target="_blank">
@@ -26,7 +26,6 @@
                     <strong id="i18n-login-title"></strong>
                 </header>
                 <div class="alert alert-{{ notification.type }} animated fadeInUp" ng-show="notification.show">
-                    <i class="fa fa-ban-circle"></i>
                     <strong>{{ notification.title }}</strong>
                     <strong>{{ notification.message }}</strong>
                 </div>
@@ -58,7 +57,7 @@
             </section>
         </div>
     </section>
-    <section id="content" class="m-t-lg wrapper-md animated lightSpeedIn" ng-controller="optionsCtrl" ng-show="logged">
+    <section id="contentOptions" class="m-t-lg wrapper-md animated lightSpeedIn" ng-controller="optionsCtrl" ng-show="logged">
         <div class="container aside-xl">
             <div class="text-center">
                 <a href="https://ully.in" target="_blank">
@@ -70,7 +69,6 @@
                     <strong id="i18n-options-title"></strong>
                 </header>
                 <div class="alert alert-{{ notification.type }} animated lightSpeedIn" ng-class="{ 'hide': !notification.show }">
-                    <i class="fa fa-ban-circle"></i>
                     <strong>{{ notification.title }}</strong>
                     <strong>{{ notification.message }}</strong>
                 </div>

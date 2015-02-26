@@ -1,8 +1,8 @@
 /*
- * ully
- * https://ully.in
+ * ully-chrome
+ * https://github.com/ullyin/ully-chrome
  *
- * Copyright (c) 2014, EnyTC Corporation
+ * Copyright (c) 2015, EnyTC Corporation
  */
 
 'use strict';

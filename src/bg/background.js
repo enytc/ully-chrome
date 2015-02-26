@@ -1,8 +1,8 @@
 /*
- * ully
- * https://ully.in
+ * ully-chrome
+ * https://github.com/ullyin/ully-chrome
  *
- * Copyright (c) 2014, EnyTC Corporation
+ * Copyright (c) 2015, EnyTC Corporation
  */
 
 'use strict';
@@ -77,7 +77,7 @@ chrome.tabs.onActivated.addListener(function(tabId, windowId) {
                             });
                         }
                     });
-                    window.socket.on('/api/collections/url/error', function(err) {
+                    window.socket.on('/api/collections/url/exists/error', function(err) {
                         console.log(err);
                     });
                 }
@@ -105,7 +105,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
                         });
                     }
                 });
-                window.socket.on('/api/collections/url/error', function(err) {
+                window.socket.on('/api/collections/url/exists/error', function(err) {
                     console.log(err);
                 });
             }

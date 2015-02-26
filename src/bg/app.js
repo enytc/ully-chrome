@@ -1,8 +1,8 @@
 /*
- * ully
- * https://ully.in
+ * ully-chrome
+ * https://github.com/ullyin/ully-chrome
  *
- * Copyright (c) 2014, EnyTC Corporation
+ * Copyright (c) 2015, EnyTC Corporation
  */
 
 'use strict';
@@ -191,6 +191,15 @@ ullyExtension.controller('loginCtrl', ['$scope', '$http', '$utils', '$loading',
                             $loading.complete();
                             $utils.login(data.response.access_token);
                             $utils.refresh();
+                        } else {
+                            $loading.complete();
+                            $scope.notification = {
+                                show: true,
+                                type: 'danger',
+                                message: data.response.msg
+                            };
+                            $scope.loading = false;
+                            $scope.logged = false;
                         }
                     })
                     .error(function(data, status) {
@@ -337,7 +346,6 @@ ullyExtension.controller('optionsCtrl', ['$scope', '$window', '$http', '$socket'
                     message: err
                 };
                 $scope.loading = false;
-                $scope.logged = false;
                 $loading.complete();
             });
         };
