@@ -13,7 +13,7 @@ If you have any problem or suggestion please open an issue [here](https://github
 
 The BSD License
 
-Copyright (c) 2014, EnyTC Corporation
+Copyright (c) 2015, EnyTC Corporation
 
 All rights reserved.
 
