@@ -61,7 +61,13 @@ chrome.tabs.onActivated.addListener(function(tabId, windowId) {
             active: true,
             currentWindow: true
         }, function(tab) {
-            if (/^https?:\/\//.test(tab[0].url)) {
+            var tabUrl;
+            if(tab instanceof Array && tab[0].hasOwnProperty('url')) {
+                tabUrl = tab[0].url;
+            } else {
+                tabUrl = '';
+            }
+            if (/^https?:\/\//.test(tabUrl)) {
                 if (window.hasOwnProperty('socket')) {
                     window.socket.emit('/api/collections/url', {
                         url: tab[0].url
@@ -81,6 +87,10 @@ chrome.tabs.onActivated.addListener(function(tabId, windowId) {
                         console.log(err);
                     });
                 }
+            } else {
+                chrome.browserAction.setIcon({
+                    path: 'icons/icon19.png'
+                });
             }
         });
     }
@@ -89,7 +99,7 @@ chrome.tabs.onActivated.addListener(function(tabId, windowId) {
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     //Check user is logged
     if (isLogged()) {
-        if (/^https?:\/\//.test(tab.url)) {
+        if (tab && /^https?:\/\//.test(tab.url)) {
             if (window.hasOwnProperty('socket')) {
                 window.socket.emit('/api/collections/url', {
                     url: tab.url
@@ -109,6 +119,10 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
                     console.log(err);
                 });
             }
+        } else {
+            chrome.browserAction.setIcon({
+                path: 'icons/icon19.png'
+            });
         }
     }
 });
