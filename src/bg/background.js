@@ -17,7 +17,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     delete window.localStorage.ullyCollections;
     //Redirect
     chrome.tabs.create({
-        url: 'https://ully.in/installed'
+        url: 'https://ully.co/installed'
     });
 });
 
@@ -29,7 +29,7 @@ chrome.omnibox.onInputEntered.addListener(function(command) {
         });
     } else {
         chrome.tabs.create({
-            url: 'https://ully.in/collections/' + command
+            url: 'https://ully.co/collections/' + command
         });
     }
 });

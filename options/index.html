@@ -9,15 +9,14 @@
     <!--ASSETS-->
     <link rel="stylesheet" type="text/css" href="/js/ngprogress/ngProgress.css" />
     <link rel="stylesheet" type="text/css" href="/css/app.css" />
-    <link rel="stylesheet" type="text/css" href="/css/animate.css" />
     <link rel="stylesheet" type="text/css" href="/css/addons.css" />
 </head>
 
 <body class="ully-bg">
-    <section id="contentLogin" class="m-t-lg wrapper-md animated bounceInUp" ng-controller="loginCtrl" ng-hide="logged">
+    <section id="contentLogin" class="m-t-lg wrapper-md" ng-controller="loginCtrl" ng-hide="logged">
         <div class="container aside-xl">
             <div class="text-center">
-                <a href="https://ully.in" target="_blank">
+                <a href="https://ully.co" target="_blank">
                     <img class="ully-logo" width="210px" height="80px" src="/img/logo-white.png">
                 </a>
             </div>
@@ -25,7 +24,7 @@
                 <header class="wrapper text-white text-center">
                     <strong id="i18n-login-title"></strong>
                 </header>
-                <div class="alert alert-{{ notification.type }} animated fadeInUp" ng-show="notification.show">
+                <div class="alert alert-{{ notification.type }}" ng-show="notification.show">
                     <strong>{{ notification.title }}</strong>
                     <strong>{{ notification.message }}</strong>
                 </div>
@@ -52,15 +51,15 @@
                             <small id="i18n-login-note"></small>
                         </strong>
                     </p>
-                    <a id="i18n-button-create-account" href="https://ully.in/signup" target="_blank" class="btn btn-lg btn-info btn-block"></a>
+                    <a id="i18n-button-create-account" href="https://ully.co/signup" target="_blank" class="btn btn-lg btn-info btn-block"></a>
                 </form>
             </section>
         </div>
     </section>
-    <section id="contentOptions" class="m-t-lg wrapper-md animated lightSpeedIn" ng-controller="optionsCtrl" ng-show="logged">
+    <section id="contentOptions" class="m-t-lg wrapper-md" ng-controller="optionsCtrl" ng-show="logged">
         <div class="container aside-xl">
             <div class="text-center">
-                <a href="https://ully.in" target="_blank">
+                <a href="https://ully.co" target="_blank">
                     <img width="210px" height="80px" src="/img/logo-white.png">
                 </a>
             </div>
@@ -68,14 +67,14 @@
                 <header class="wrapper text-white text-center">
                     <strong id="i18n-options-title"></strong>
                 </header>
-                <div class="alert alert-{{ notification.type }} animated lightSpeedIn" ng-class="{ 'hide': !notification.show }">
+                <div class="alert alert-{{ notification.type }}" ng-class="{ 'hide': !notification.show }">
                     <strong>{{ notification.title }}</strong>
                     <strong>{{ notification.message }}</strong>
                 </div>
                 <div>
                     <div class="text-center">
                         <div class="thumb-lg" ng-show="user.hashedEmail">
-                            <a ng-href="https://ully.in/{{ user.username }}" target="_blank">
+                            <a ng-href="https://ully.co/{{ user.username }}" target="_blank">
                                 <img alt="{{ user.name }}" ng-src="{{ gravatar(user.hashedEmail, 128) }}" class="img-rounded">
                             </a>
                         </div>

@@ -6,12 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <!--ASSETS-->
     <link rel="stylesheet" type="text/css" href="/css/app.css" />
-    <link rel="stylesheet" type="text/css" href="/css/animate.css" />
     <link rel="stylesheet" type="text/css" href="/css/popup.css" />
 </head>
 
-<body class="" ng-controller="ullyCtrl">
-    <div class="ully-panel animated lightSpeedIn">
+<body ng-controller="ullyCtrl">
+    <div class="ully-panel">
         <header class="header">
             <div class="row wrapper">
                 <div class="pull-left">
@@ -21,18 +20,18 @@
                 <div class="pull-right">
                     <div class="btn-group">
                         <a href="#" class="btn btn-sm"><i class="fa fa-refresh fa-spin" ng-show="loadingPage"></i></a>
-                        <a href="https://ully.in" target="_blank" class="btn btn-sm btn-default"><i class="fa fa-home"></i></a>
-                        <a ng-href="https://ully.in/{{ user.username }}" target="_blank" class="btn btn-sm btn-default" ng-show="logged"><i class="fa fa-user"></i></a>
+                        <a href="https://ully.co" target="_blank" class="btn btn-sm btn-default"><i class="fa fa-home"></i></a>
+                        <a ng-href="https://ully.co/{{ user.username }}" target="_blank" class="btn btn-sm btn-default" ng-show="logged"><i class="fa fa-user"></i></a>
                         <a href="#" ng-click="optionsPage()" class="btn btn-sm btn-default"><i class="fa fa-cog"></i></a>
                     </div>
                 </div>
             </div>
         </header>
-        <div class="alert alert-{{ notification.type }} animated lightSpeedIn" ng-show="notification.show">
+        <div class="alert alert-{{ notification.type }}" ng-show="notification.show">
             <strong>{{ notification.title }}</strong>
             {{ notification.message }}
         </div>
-        <section class="ully-body animated lightSpeedIn bg-white" ng-show="logged">
+        <section class="ully-body bg-white" ng-show="logged">
             <form class="form-horizontal" name="createUrlForm" novalidate ng-submit="submit(createUrlForm.$valid)">
                 <div class="list-group">
                     <div class="list-group-item">
@@ -61,7 +60,7 @@
                 </footer>
             </form>
         </section>
-        <div class="ully-body animated fadeInUp" ng-hide="logged">
+        <div class="ully-body" ng-hide="logged">
             <section class="header">
                 <div class="alert alert-info">
                     <p id="i18n-popup-note"></p>

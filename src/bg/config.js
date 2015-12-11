@@ -7,7 +7,7 @@
 
 'use strict';
 
-var ULLY_URI = window.localStorage.ULLY_URI || 'https://ully.in';
+var ULLY_URI = window.localStorage.ULLY_URI || 'https://ully.co';
 
 function NC(title, msg, body, buttons) {
     var opt = {
